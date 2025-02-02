@@ -1,17 +1,20 @@
-# Use the official Python image
-FROM python:3.7
+# Use the official Python image as the base image
+FROM python:3.9-slim
 
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy the application files
-COPY . /app
+# Copy the requirements file into the container
+COPY requirements.txt /app/
 
-# Install dependencies
+# Install the dependencies from requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose the port Heroku dynamically assigns
-EXPOSE $PORT
+# Copy the entire app into the container
+COPY . /app/
 
-# Run the application with Gunicorn
-CMD ["gunicorn", "--workers=4", "--bind=0.0.0.0:$PORT", "app:app"]
+# Expose the port the app will run on
+EXPOSE 5000
+
+# Command to run the Flask app using gunicorn (production WSGI server)
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
